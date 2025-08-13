@@ -8,38 +8,44 @@ function addTask(){
         return;
     taskInput.value="";
 
-    const newDiv=document.createElement('div');
-    newDiv.classList.add("task-element");
+    const newTask=document.createElement('div');
+    newTask.classList.add("task-element");
 
+    const checkAndPContainer=document.createElement('div');
+    
     const newCheck=document.createElement('input')
+    newCheck.classList.add('check-completed')
     newCheck.type='checkbox';
-    newDiv.appendChild(newCheck);
+    checkAndPContainer.appendChild(newCheck);
     newCheck.addEventListener("change",()=>{
         if(newCheck.checked){
-            newDiv.style.backgroundColor="#b4aaaaff";
-            newDiv.style.textDecoration='line-through';
+            newTask.style.backgroundColor="#b4aaaaff";
+            newTask.style.textDecoration='line-through';
+            newTask.style.opacity=0.7;
         }
         else{
-            newDiv.style.backgroundColor="";
-            newDiv.style.textDecoration='';
+            newTask.style.backgroundColor="";
+            newTask.style.textDecoration='';
+            newTask.style.opacity=1;
         }
     });
 
     const newp=document.createElement('p');
     newp.classList.add('task-content');
     newp.textContent=inputValue;
-    newDiv.appendChild(newp);
+    checkAndPContainer.appendChild(newp);
 
+    newTask.appendChild(checkAndPContainer);
     const delBtn=document.createElement('button');
     delBtn.classList.add('delete-btn');
     delBtn.textContent='Delete';
     delBtn.addEventListener("click", () => {
-        newDiv.remove();
+        newTask.remove();
     });
 
-    newDiv.appendChild(delBtn);
+    newTask.appendChild(delBtn);
 
-    document.body.appendChild(newDiv);
+    tasksContainer.appendChild(newTask);
 }
 
 addBtn.addEventListener("click",addTask);

@@ -1,55 +1,86 @@
-const addBtn=document.getElementById("add-task-btn");
-const tasksContainer=document.getElementById("tasks-container");
-const taskInput=document.getElementById("task-input");
+const taskInput = document.querySelector('.task-input');
+const addBtn = document.querySelector('.add-btn');
+const tasksContainer = document.querySelector('.tasks-container');
 
-function addTask(){
-    const inputValue=taskInput.value.trim();
-    if(!inputValue)
-        return;
-    taskInput.value="";
-
-    const newTask=document.createElement('div');
-    newTask.classList.add("task-element");
-
-    const checkAndPContainer=document.createElement('div');
-    
-    const newCheck=document.createElement('input')
-    newCheck.classList.add('check-completed')
-    newCheck.type='checkbox';
-    checkAndPContainer.appendChild(newCheck);
-    newCheck.addEventListener("change",()=>{
-        if(newCheck.checked){
-            newTask.style.backgroundColor="#b4aaaaff";
-            newTask.style.textDecoration='line-through';
-            newTask.style.opacity=0.7;
-        }
-        else{
-            newTask.style.backgroundColor="";
-            newTask.style.textDecoration='';
-            newTask.style.opacity=1;
-        }
-    });
-
-    const newp=document.createElement('p');
-    newp.classList.add('task-content');
-    newp.textContent=inputValue;
-    checkAndPContainer.appendChild(newp);
-
-    newTask.appendChild(checkAndPContainer);
-    const delBtn=document.createElement('button');
-    delBtn.classList.add('delete-btn');
-    delBtn.textContent='Delete';
-    delBtn.addEventListener("click", () => {
-        newTask.remove();
-    });
-
-    newTask.appendChild(delBtn);
-
-    tasksContainer.appendChild(newTask);
+function validInput(str) {
+    return str.trim();
 }
 
-addBtn.addEventListener("click",addTask);
-taskInput.addEventListener("keydown",function(event){
-    if(event.key==='Enter')
-        addTask();
+function createTag(tag, type = '') {
+    const element = document.createElement(tag);
+    if (type) 
+        element.type = type;
+    return element;
+}
+
+function addClass(el, className) {
+    el.classList.add(className);
+    return el;
+}
+
+function removeClass(el, className) {
+    el.classList.remove(className);
+    return el;
+}
+
+function addEvent(el, event, callback) {
+    el.addEventListener(event, callback);
+    return el;
+}
+
+function changeTextContent(el, newText) {
+    el.textContent = newText;
+    return el;
+}
+
+function changeValue(el, newValue) {
+    el.value = newValue;
+    return el;
+}
+
+function appendElementsToContainer(container, ...elements) {
+    container.append(...elements);
+    return container;
+}
+
+function createTask(text) {
+    const task = addClass(createTag('div'), 'task-element');
+
+    const checkbox = addEvent(createTag('input', 'checkbox'),'change'
+    ,function () {
+            if (this.checked)
+                addClass(task, 'completed-task');
+            else
+                removeClass(task, 'completed-task');
+        }
+    );
+
+    const par = changeTextContent(addClass(createTag('p'), 'task-content'),text);
+
+    const checkAndP = appendElementsToContainer(createTag('div'), checkbox, par);
+
+    const delBtn = addEvent(changeTextContent(addClass(createTag('button'), 'delete-btn'), 'Delete'),'click',() => task.remove());
+
+    appendElementsToContainer(task, checkAndP, delBtn);
+
+    return task;
+}
+
+function addTask(input) {
+    const validatedInput = validInput(input.value);
+    if (!validatedInput) 
+        return;
+
+    changeValue(input, ''); 
+
+    const newTask = createTask(validatedInput);
+    appendElementsToContainer(tasksContainer, newTask);
+}
+
+addBtn.addEventListener('click', () => addTask(taskInput));
+
+taskInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') {
+        addTask(taskInput);
+    }
 });

@@ -57,7 +57,7 @@ function createTask(text) {
 
     const par = changeTextContent(addClass(createTag('p'), 'task-content'),text);
 
-    const checkAndP = appendElementsToContainer(createTag('div'), checkbox, par);
+    const checkAndP = appendElementsToContainer(addClass(createTag('div'),'check-par-container'), checkbox, par);
 
     const delBtn = addEvent(changeTextContent(addClass(createTag('button'), 'delete-btn'), 'Delete'),'click',() => task.remove());
 

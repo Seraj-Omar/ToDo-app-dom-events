@@ -1,82 +1,137 @@
-*{
+* {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
     transition: 0.3s;
 }
-body{
-    *{
-        max-width: 700px;
-    }
-    background-color: #f5f5f5;
-    padding: 25px;
-    .app-header {
-        width: fit-content;
-        margin: 20px auto;
-        font-size: 30px;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-    .app-container {
-            margin: 20px auto;
-            width: 90%;
-    
-            #task-input{
-                padding: 1px 0;
-                height: 24px;
-                width: 80%;
-                border: 1px grey dashed;
-                border-radius: 3px;
-            }
 
-            #task-input:hover{
-                border:1px grey solid;
-            }
-            .check-completed:hover{
-                cursor: pointer;
-            }
-            #add-task-btn{
-                background-color: rgb(170, 255, 139);
-                font-weight: bold;
-                border-radius: 3px;
-                border: 1px solid black;
-                width: 15%;
-                padding: 3px 5px;
-            }
-            
-            #add-task-btn:hover{
-                color: rgb(90, 90, 90);
-                background-color: rgb(138, 240, 100);
-                cursor: pointer;
-            }
-            
-            .task-element{
-                background-color: #fff9c4;
-                width: 80%;
-                font-weight: bold;
-                font-size: 25px;
-                padding: 15px;
-                margin: 10px 0;
-                border: 1px black solid;
-                border-radius: 3px;
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
 
-                .task-content{
-                    word-wrap: break-word;
-                    overflow-wrap: break-word;
-                }
-                .delete-btn{
-                    color: white;
-                    background-color: #ff6b6b;
-                    color: #ffffff;
-                    border: 1px #e63946 solid;
-                    padding: 6px;
-                    border-radius: 4px;
-                    position: relative;
-                    left: 90%;
-                }
-                .delete-btn:hover{
-                    background-color: #ff5252;
-                    cursor: pointer;
-                }
-            }
-        }
+.app-header {
+    text-align: center;
+    margin: 20px auto;
+}
+
+.app-name {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+}
+
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.input-container {
+    width: 95%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    margin: 20px auto;
+    gap: 10px;
+}
+
+.task-input {
+    flex: 1;
+    border-radius: 6px;
+    border: 1px solid #aaa;
+    padding: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+.task-input:focus {
+    border-color: #333;
+}
+
+.add-btn {
+    padding: 0 15px;
+    border-radius: 6px;
+    border: none;
+    background-color: #333;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.add-btn:hover {
+    background-color: #555;
+}
+
+.tasks-container {
+    width: 95%;
+    max-width: 600px;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.task-element {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 12px 16px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.check-par-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.task-content {
+    font-size: 16px;
+    color: #333;
+    word-break: break-word;
+}
+
+.completed-task .task-content {
+    text-decoration: line-through;
+    color: #888;
+}
+
+.task-element input{
+    transform: scale(1.3);
+    cursor: pointer;
+}
+
+.delete-btn {
+    border: none;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+
+.app-footer {
+    margin-top: auto;
+    text-align: center;
+    padding: 15px;
+    background-color: rgb(65, 27, 27);
+    color: #fff;
+}
+
+.copyrights {
+    font-size: 14px;
 }

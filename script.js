@@ -68,10 +68,10 @@ function createTask(text) {
 
 function addTask(input) {
     const validatedInput = validInput(input.value);
+    changeValue(input, ''); 
     if (!validatedInput) 
         return;
 
-    changeValue(input, ''); 
 
     const newTask = createTask(validatedInput);
     appendElementsToContainer(tasksContainer, newTask);

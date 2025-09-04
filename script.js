@@ -10,8 +10,7 @@ function validInput(str) {
 //create a new tag and decide its type if needed
 function createTag(tag, type = '') {
     const element = document.createElement(tag);
-    if (type) 
-        element.type = type;
+    if (type) element.type = type;
     return element;
 }
 
@@ -51,105 +50,141 @@ function appendElementsToContainer(container, ...elements) {
     return container;
 }
 
-//save items in local storage in the wanted key
-function saveToLocal(key,value){
-    localStorage.setItem(key,JSON.stringify(value));
+//======local Storage helpers=====
+
+function getFromLocal(key) {
+    try {
+        return JSON.parse(localStorage.getItem(key)) || [];
+    } catch (err) {
+        console.error("Error reading from localStorage:", err);
+        return [];
+    }
 }
 
-//add task to local storage in the wanted key
-function addToLocal(task){
-    let tasksArray=getFromLocal('tasks');
+function saveToLocal(key, value) {
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch (err) {
+        console.error("Error saving to localStorage:", err);
+    }
+}
+
+function addToLocal(task) {
+    let tasksArray = getFromLocal('tasks');
     tasksArray.push(task);
-    saveToLocal('tasks',tasksArray);
+    saveToLocal('tasks', tasksArray);
 }
 
-//get the value of a specific key from local storage
-function getFromLocal(key){
-    return JSON.parse(localStorage.getItem(key))||[];
+function removeFromLocal(id) {
+    let tasksArray = getFromLocal('tasks');
+    tasksArray = tasksArray.filter(task => task.id !== id);
+    saveToLocal('tasks', tasksArray);
 }
 
-//remove a specific value from a specific key in local storage
-function removeFromLocal(task){
-    let tasksArray=getFromLocal('tasks');
-    const idx=Array.from(tasksContainer.children).indexOf(task);
-    tasksArray.splice(idx,1);
-    saveToLocal('tasks',tasksArray);
+function updateStatus(id, status) {
+    let tasksArray = getFromLocal('tasks');
+    const task = tasksArray.find(t => t.id === id);
+    if (task) {
+        task.completed = status;
+        saveToLocal('tasks', tasksArray);
+    }
 }
 
-//control the status of a task in local storage (complete,uncomplete)
-function updateStatus(idx,status){
-    // saveToLocal(getFromLocal()[idx].completed=status);
-    let tasksArray=getFromLocal('tasks');
-    tasksArray[idx].completed=status;
-    saveToLocal('tasks',tasksArray);
+
+//=====Counter for generating a unique id for each task======
+function getCounter() {
+    return parseInt(localStorage.getItem('taskCounter') || '0', 10);
 }
 
-//create the desired task 
-function createTask(text,status=false) {
+function incrementCounter() {
+    let counter = getCounter() + 1;
+    localStorage.setItem('taskCounter', counter);
+    return counter;
+}
+
+
+//=====Creation of tasks=====
+function createTask(taskObj) {
     const task = addClass(createTag('div'), 'task-element');
-    if(status)
-        addClass(task,'completed-task');
+    task.dataset.id = taskObj.id;
+
+    if (taskObj.completed) addClass(task, 'completed-task');
 
     const checkbox = createTag('input', 'checkbox');
-    checkbox.checked = status;
+    checkbox.checked = taskObj.completed;
 
-    addEvent(checkbox, 'change', function () {
-        const idx = Array.from(tasksContainer.children).indexOf(task);
-        if (this.checked) {
-            addClass(task, 'completed-task');
-            updateStatus(idx, true);
-        } else {
-            removeClass(task, 'completed-task');
-            updateStatus(idx, false);
-        }
-    });
+    const par = changeTextContent(addClass(createTag('p'), 'task-content'), taskObj.text);
 
-    const par = changeTextContent(addClass(createTag('p'), 'task-content'),text);
+    const checkAndP = appendElementsToContainer(addClass(createTag('div'), 'check-par-container'), checkbox, par);
 
-    const checkAndP = appendElementsToContainer(addClass(createTag('div'),'check-par-container'), checkbox, par);
-
-    //attach an event to the delete button of a task to handle the deletion of a task
-    const delBtn = addEvent(changeTextContent(addClass(createTag('button'), 'delete-btn'), 'Delete'),
-    'click',() => {
-        removeFromLocal(task);
-        task.remove()
-    });
+    const delBtn = changeTextContent(addClass(createTag('button'), 'delete-btn'), 'Delete');
 
     appendElementsToContainer(task, checkAndP, delBtn);
-
     return task;
 }
 
-//validate the input then add the task to the tasks container and to the local storage
+
+//=======Event Delegation======
+addEvent(tasksContainer, 'click', (e) => {
+    const taskEl = e.target.closest('.task-element');
+    if (!taskEl) return;
+
+    const taskId = parseInt(taskEl.dataset.id, 10);
+
+    if (e.target.matches('.delete-btn')) {
+        removeFromLocal(taskId);
+        taskEl.remove();
+    }
+});
+
+addEvent(tasksContainer, 'change', (e) => {
+    if (e.target.type === 'checkbox') {
+        const taskEl = e.target.closest('.task-element');
+        const taskId = parseInt(taskEl.dataset.id, 10);
+
+        if (e.target.checked) {
+            addClass(taskEl, 'completed-task');
+            updateStatus(taskId, true);
+        } else {
+            removeClass(taskEl, 'completed-task');
+            updateStatus(taskId, false);
+        }
+    }
+});
+
+
+//==== Managing tasks ====
 function addTask(input) {
     const validatedInput = validInput(input.value);
-    changeValue(input, ''); 
-    if (!validatedInput) 
-        return;
+    changeValue(input, '');
+    if (!validatedInput) return;
 
-    const taskObj={
-        text:validatedInput,
-        completed:false
+    const taskObj = {
+        id: incrementCounter(),
+        text: validatedInput,
+        completed: false
     };
+
     addToLocal(taskObj);
-    const newTask = createTask(taskObj.text,taskObj.completed);
+    const newTask = createTask(taskObj);
     appendElementsToContainer(tasksContainer, newTask);
 }
 
-//when the page loads display the tasks in local storage if exist
+
+//==== Page Load ====
 window.onload = () => {
     const tasksArray = getFromLocal('tasks');
     tasksArray.forEach(taskObj => {
-        const taskElement = createTask(taskObj.text,taskObj.completed);
+        const taskElement = createTask(taskObj);
         appendElementsToContainer(tasksContainer, taskElement);
     });
 };
 
-//add click event to the add button
-addBtn.addEventListener('click', () => addTask(taskInput));
 
-//adding an event for pressing enter after typing the task 
-taskInput.addEventListener('keydown', (event) => {
+//==== Input Listeners ====
+addEvent(addBtn, 'click', () => addTask(taskInput));
+
+addEvent(taskInput, 'keydown', (event) => {
     if (event.key === 'Enter') {
         addTask(taskInput);
     }
